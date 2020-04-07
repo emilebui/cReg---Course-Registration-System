@@ -1,5 +1,6 @@
 ﻿@model cRegis.Web.ViewModels.CourseContainerViewModel
 @using cRegis.Web.Interfaces;
+@using cRegis.Core.Interfaces;
 
 <div class="card row mt-3">
     <div class="card-header col-12">
@@ -45,18 +46,18 @@
                     }
                     @if (Model.actions.Contains(CourseActions.WishlistPriorityUp))
                     {
-                        <a class="btn btn-light" asp-controller="course" asp-action="Move" asp-route-cid="@Model.courseId" asp-route-direction="@CourseActions.WishlistPriorityUp">⮝</a>
+                        <a class="btn btn-light" asp-controller="course" asp-action="Move" asp-route-cid="@Model.courseId" asp-route-direction="@MoveDirection.MoveUp">⮝</a>
                     }
                     @if (Model.actions.Contains(CourseActions.WishlistPriorityDown))
                     {
-                        <a class="btn btn-light" asp-controller="course" asp-action="Move" asp-route-cid="@Model.courseId" asp-route-direction="@CourseActions.WishlistPriorityDown">⮟</a>
+                        <a class="btn btn-light" asp-controller="course" asp-action="Move" asp-route-cid="@Model.courseId" asp-route-direction="@MoveDirection.MoveDown">⮟</a>
                     }
                     @if (Model.actions.Contains(CourseActions.RemoveFromWishlist))
                     {
                         <a class="btn btn-danger" asp-controller="course" asp-action="Remove" asp-route-cid="@Model.courseId">🗙</a>
                     }
                 </div>
-             </div>
+            </div>
         </div>
     </div>
 </div>

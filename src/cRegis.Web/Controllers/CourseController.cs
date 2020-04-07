@@ -121,7 +121,7 @@ namespace cRegis.Web.Controllers
             else
             {
                 await _wishlistService.addCoursetoStudentWishlist(sid, cid);
-                TempData["alertMessage"] = "Added to Wishlist";
+                TempData["alertMessage"] = "Course Added to Wishlist";
 
             }
             return RedirectToAction("Register", "Home");
@@ -144,15 +144,15 @@ namespace cRegis.Web.Controllers
             return RedirectToAction("Wishlist", "Home");
         }
 
-        public async Task<IActionResult> Move(int cid, CourseActions direction)
+        public async Task<IActionResult> Move(int cid, MoveDirection direction)
         {
             var curUser = await _userManager.GetUserAsync(this.User);
             int sid = curUser.StudentId;
 
-            if(direction == CourseActions.WishlistPriorityUp)
+            if(direction == MoveDirection.MoveUp)
             {
                 await _wishlistService.updatePriority(sid, cid, MoveDirection.MoveUp);
-            } else if (direction == CourseActions.WishlistPriorityDown)
+            } else if (direction == MoveDirection.MoveDown)
             {
                 await _wishlistService.updatePriority(sid, cid, MoveDirection.MoveDown);
             }

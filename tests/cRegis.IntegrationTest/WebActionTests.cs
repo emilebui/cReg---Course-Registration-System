@@ -1,4 +1,5 @@
 ﻿using cRegis.Core.Entities;
+using cRegis.Core.Interfaces;
 using cRegis.Tests.IntegrationTest.Infrastructure;
 using cRegis.Web.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -161,13 +162,13 @@ namespace cRegis.IntegrationTest
         [InlineData("fb", 7, 6, false)]
         [InlineData("jb", 1, 45, false)]
         [InlineData("mz", 1, 15, false)]
-        public async Task Test(string accountId, int sid, int courseId, bool success)
+        public async Task RegisterCourseTest(string accountId, int sid, int courseId, bool success)
         {
             //arrange
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-           {
+            {
                     new Claim(ClaimTypes.Name, accountId)
-           }));
+            }));
             _courseController.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext { User = user }
@@ -188,6 +189,7 @@ namespace cRegis.IntegrationTest
                 {
                     Assert.Equal("Success Registration", _courseController.TempData["alertMessage"]);
                     Assert.NotEmpty(enrolls);
+                    Assert.Null(_context.Wishlist.Find(sid, courseId));
                 }
                 else
                 {
@@ -195,6 +197,179 @@ namespace cRegis.IntegrationTest
                 }
                 Assert.NotNull(action);
                 Assert.Equal("Register", action.ActionName);
+                Assert.Equal("Home", action.ControllerName);
+            }
+            else
+            {
+                //assert
+                Assert.False(success);
+            }
+        }
+
+        [Theory]
+        [InlineData("jb", 1, 6, true)] //Happy Path
+        [InlineData("mz", 2, 5, true)] //Happy Path
+        [InlineData("jb", 1, 1, false)] //Entry Already Exists
+        [InlineData("mz", 2, 1, false)] //Entry Already Exists
+        public async Task AddCourseToWishlistTest(string accountId, int sid, int cid, bool success)
+        {
+            //arrange
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                    new Claim(ClaimTypes.Name, accountId)
+            }));
+            _courseController.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+            var httpContext = new DefaultHttpContext();
+            var tempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>());
+            _courseController.TempData = tempData;
+
+            //act
+            Course thisCourse = _courseService.getCourse(cid);
+            if (thisCourse != null)
+            {
+                int maxPriorityOrigin = _context.Wishlist.Where(w => w.studentId == sid).Max(w => w.priority);
+                Wishlist wishlistEntryBefore = _context.Wishlist.SingleOrDefault(w => w.studentId == sid && w.courseId == cid);
+                var action = (RedirectToActionResult)await _courseController.Add(cid);
+                Wishlist wishlistEntryAfter = _context.Wishlist.SingleOrDefault(w => w.studentId == sid && w.courseId == cid);
+
+                //assert
+                if (success)
+                {
+                    Assert.Null(wishlistEntryBefore);
+                    Assert.Equal("Course Added to Wishlist", _courseController.TempData["alertMessage"]);
+                    Assert.NotNull(wishlistEntryAfter);
+                    int newEntryPriority = wishlistEntryAfter.priority;
+                    Assert.True(newEntryPriority == maxPriorityOrigin + 1);
+
+                }
+                else
+                {
+                    Assert.Equal("Course is Already in Wishlist", _courseController.TempData["alertMessage"]);
+                }
+                Assert.NotNull(action);
+                Assert.Equal("Register", action.ActionName);
+                Assert.Equal("Home", action.ControllerName);
+            }
+            else
+            {
+                //assert
+                Assert.False(success);
+            }
+        }
+
+        [Theory]
+        [InlineData("jb", 1, 1, true)] //Happy Path
+        [InlineData("mz", 2, 1, true)] //Happy Path
+        [InlineData("jb", 1, 6, false)] //Non-Existent Entry
+        [InlineData("mz", 2, 6, false)] //Non-Existent Entry
+        public async Task RemoveCourseFromWishlistTest(string accountId, int sid, int cid, bool success)
+        {
+            //arrange
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                    new Claim(ClaimTypes.Name, accountId)
+            }));
+            _courseController.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+            var httpContext = new DefaultHttpContext();
+            var tempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>());
+            _courseController.TempData = tempData;
+
+            //act
+            Course thisCourse = _courseService.getCourse(cid);
+            if (thisCourse != null)
+            {
+                var action = (RedirectToActionResult)await _courseController.Remove(cid);
+
+                //assert
+                if (success)
+                {
+                    Assert.Equal("Course was Removed From Wishlist", _courseController.TempData["alertMessage"]);
+                    Assert.Null(_context.Wishlist.Find(sid, cid));
+                }
+                else
+                {
+                    Assert.Equal("Course is Not in Wishlist", _courseController.TempData["alertMessage"]);
+                }
+                Assert.NotNull(action);
+                Assert.Equal("Wishlist", action.ActionName);
+                Assert.Equal("Home", action.ControllerName);
+            }
+            else
+            {
+                //assert
+                Assert.False(success);
+            }
+        }
+
+        [Theory]
+        [InlineData("jb", 1, 2, MoveDirection.MoveUp, true, true)] //Happy Path Move Up Update
+        [InlineData("jb", 1, 1, MoveDirection.MoveUp, false, true)] //Happy Path Move Up No Update
+        [InlineData("jb", 1, 20, MoveDirection.MoveUp, true, false)] //Non-Existent Entry Move Up Update
+        [InlineData("jb", 1, 20, MoveDirection.MoveUp, false, false)] //Non-Existent Entry Move Up No Update
+        [InlineData("jb", 1, 2, MoveDirection.MoveDown, true, true)] //Happy Path Move Down Update
+        [InlineData("jb", 1, 5, MoveDirection.MoveDown, false, true)] //Happy Path Move Down No Update
+        [InlineData("jb", 1, 20, MoveDirection.MoveDown, true, false)] //Non-Existent Entry Move Down Update
+        [InlineData("jb", 1, 20, MoveDirection.MoveDown, false, false)] //Non-Existent Entry Move Up Down Update
+        public async Task MoveWishlistEntryPriorityTest(string accountId, int sid, int cid, MoveDirection direction, bool update, bool success)
+        {
+            //arrange
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                    new Claim(ClaimTypes.Name, accountId)
+            }));
+            _courseController.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+            var httpContext = new DefaultHttpContext();
+            var tempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>());
+            _courseController.TempData = tempData;
+
+            //act
+            Course thisCourse = _courseService.getCourse(cid);
+            if (thisCourse != null)
+            {
+                var action = default(RedirectToActionResult);
+                Wishlist entryToMove = _context.Wishlist.SingleOrDefault(w => w.studentId == sid && w.courseId == cid);
+                //assert
+                if (success)
+                {
+                    Assert.NotNull(entryToMove);
+                    int entryToMovePriority = entryToMove.priority;
+                    Assert.True(entryToMovePriority > 0);
+
+                    action = (RedirectToActionResult)await _courseController.Move(cid, direction);
+
+                    Assert.NotNull(entryToMove);
+                    int entryToMovePriorityUpdated = entryToMove.priority;
+                    Assert.True(entryToMovePriority > 0);
+                    if (update && direction == MoveDirection.MoveUp)
+                    {
+                        Assert.True(entryToMovePriorityUpdated == entryToMovePriority - 1);
+                    }
+                    else if (update && direction == MoveDirection.MoveDown)
+                    {
+                        Assert.True(entryToMovePriorityUpdated == entryToMovePriority + 1);
+                    }
+                    else if (!update && (direction == MoveDirection.MoveUp || direction == MoveDirection.MoveDown))
+                    {
+                        Assert.True(entryToMovePriorityUpdated == entryToMovePriority);
+                    }
+                }
+                else
+                {
+                    Assert.Null(entryToMove);
+                    action = (RedirectToActionResult)await _courseController.Move(cid, direction);
+                    Assert.Null(entryToMove);
+                }
+                Assert.NotNull(action);
+                Assert.Equal("Wishlist", action.ActionName);
                 Assert.Equal("Home", action.ControllerName);
             }
             else

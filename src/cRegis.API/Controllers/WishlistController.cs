@@ -21,7 +21,7 @@ namespace cRegis.API.Controllers
             _wishlistService = wishlistService;
         }
 
-        [Route("[controller]/{cid}")]
+        [Route("[controller]/add/{cid}")]
         [HttpPost]
         public async Task<ActionResult> addCoursetoStudentWishlist(int cid)
         {
@@ -37,7 +37,7 @@ namespace cRegis.API.Controllers
             return Ok("Successful Addition To Wishlist");
         }
 
-        [Route("[controller]/{cid}")]
+        [Route("[controller]/moveUp/{cid}")]
         [HttpPost]
         public async Task<ActionResult> updatePriorityUp(int cid)
         {
@@ -46,7 +46,7 @@ namespace cRegis.API.Controllers
             return Ok();
         }
 
-        [Route("[controller]/{cid}")]
+        [Route("[controller]/moveDown/{cid}")]
         [HttpPost]
         public async Task<ActionResult> updatePriorityDown(int cid)
         {
@@ -55,7 +55,7 @@ namespace cRegis.API.Controllers
             return Ok();
         }
 
-        [Route("[controller]/{cid}")]
+        [Route("[controller]/remove/{cid}")]
         [HttpDelete]
         public ActionResult removeCourseFromStudentWishlist(int cid)
         {

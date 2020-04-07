@@ -56,6 +56,10 @@ namespace cRegis.Core.Services
             }
 
             Wishlist sourceEntry = _context.Wishlist.Find(sid, cid);
+            if(sourceEntry == null)
+            {
+                return 3;
+            }
             int sourceEntryPriority = sourceEntry.priority;
             int lastPriorityNum = _context.Wishlist.Where(w => w.studentId == sid).Max(w => w.priority);
             int destinationEntryPriority = -1;
@@ -65,7 +69,7 @@ namespace cRegis.Core.Services
             }
             else if (direction == MoveDirection.MoveUp && sourceEntryPriority <= 1)
             {
-                return 3;
+                return 4;
             }
             else if (direction == MoveDirection.MoveDown && sourceEntryPriority < lastPriorityNum)
             {
@@ -73,7 +77,7 @@ namespace cRegis.Core.Services
             }
             else if (direction == MoveDirection.MoveDown && sourceEntryPriority >= lastPriorityNum)
             {
-                return 4;
+                return 5;
             }
 
             Wishlist destinationEntry = _context.Wishlist.SingleOrDefault(w => w.studentId == sid && w.priority == destinationEntryPriority);

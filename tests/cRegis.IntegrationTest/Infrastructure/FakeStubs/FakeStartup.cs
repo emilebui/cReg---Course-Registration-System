@@ -47,6 +47,7 @@ namespace cRegis.Tests.IntegrationTest.Infrastructure
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IEnrollService, EnrollService>();
             services.AddScoped<IFacultyService, FacultyService>();
+            services.AddScoped<IWishlistService, WishlistService>();
 
             //injecting custom Web services
             services.AddScoped<IViewModelService, ViewModelService>();

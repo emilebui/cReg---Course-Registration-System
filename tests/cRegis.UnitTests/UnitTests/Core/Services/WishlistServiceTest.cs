@@ -64,9 +64,9 @@ namespace cRegis.UnitTests.UnitTests.Core.Services
         public async void updatePriorityTest_MoveUp_HappyPath()
         {
             //Get Entry
-            int studentNum = 1;
-            int courseNum = 2;
-            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentNum && w.courseId == courseNum);
+            int studentId = 1;
+            int courseId = 2;
+            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.courseId == courseId);
             Assert.NotNull(entry);
             //Get Priority
             int entryPriority = entry.priority;
@@ -100,26 +100,40 @@ namespace cRegis.UnitTests.UnitTests.Core.Services
         }
 
         [Fact]
+        public async void updatePriorityTest_MoveUp_NonExistentEntry()
+        {
+            //Get Entry
+            int studentId = 1;
+            int courseId = 20;
+            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.courseId == courseId);
+            Assert.Null(entry);
+            //Move Priority Up
+            MoveDirection direction = MoveDirection.MoveUp;
+            int outcome = await _wishlistService.updatePriority(studentId, courseId, direction);
+            Assert.True(outcome == 3);
+        }
+
+        [Fact]
         public async void updatePriorityTest_MoveUp_NoAction()
         {
             //Get Entry
-            int studentNum = 1;
+            int studentId = 1;
             int maxPriority = 1;
-            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentNum && w.priority == maxPriority);
+            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.priority == maxPriority);
             Assert.NotNull(entry);
             //Move Priority Up
             MoveDirection direction = MoveDirection.MoveUp;
             int outcome = await _wishlistService.updatePriority(entry.studentId, entry.courseId, direction);
-            Assert.True(outcome == 3);
+            Assert.True(outcome == 4);
         }
 
         [Fact]
         public async void updatePriorityTest_MoveDown_HappyPath()
         {
             //Get Entry
-            int studentNum = 1;
-            int courseNum = 2;
-            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentNum && w.courseId == courseNum);
+            int studentId = 1;
+            int courseId = 2;
+            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.courseId == courseId);
             Assert.NotNull(entry);
             //Get Priority
             int entryPriority = entry.priority;
@@ -153,22 +167,36 @@ namespace cRegis.UnitTests.UnitTests.Core.Services
         }
 
         [Fact]
+        public async void updatePriorityTest_MoveDown_NonExistentEntry()
+        {
+            //Get Entry
+            int studentId = 1;
+            int courseId = 20;
+            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.courseId == courseId);
+            Assert.Null(entry);
+            //Move Priority Down
+            MoveDirection direction = MoveDirection.MoveDown;
+            int outcome = await _wishlistService.updatePriority(studentId, courseId, direction);
+            Assert.True(outcome == 3);
+        }
+
+        [Fact]
         public async void updatePriorityTest_MoveDown_NoAction()
         {
             //Get List
-            int studentNum = 1;
-            List<Wishlist> wishlist = _context.Wishlist.Where(w => w.studentId == studentNum).ToList();
-            Assert.NotNull(wishlist);
+            int studentId = 1;
+            List<Wishlist> wishlist = _context.Wishlist.Where(w => w.studentId == studentId).ToList();
+            Assert.NotEmpty(wishlist);
             //Get Min Priority
             int minPriority = wishlist.Max(w => w.priority);
             Assert.True(minPriority > 0);
             //Get Entry
-            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentNum && w.priority == minPriority);
+            Wishlist entry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.priority == minPriority);
             Assert.NotNull(entry);
             //Move Priority Down
             MoveDirection direction = MoveDirection.MoveDown;
             int outcome = await _wishlistService.updatePriority(entry.studentId, entry.courseId, direction);
-            Assert.True(outcome == 4);
+            Assert.True(outcome == 5);
         }
 
         //verifyWishlistEntryTest()
@@ -217,16 +245,16 @@ namespace cRegis.UnitTests.UnitTests.Core.Services
         public void removeCourseFromStudentWishlist_HappyPath_PriorityChange()
         {
             //Get Entry
-            int studentNum = 1;
-            int courseNum = 1;
-            Wishlist entryToRemove = _context.Wishlist.Find(studentNum, courseNum);
+            int studentId = 1;
+            int courseId = 1;
+            Wishlist entryToRemove = _context.Wishlist.Find(studentId, courseId);
             Assert.NotNull(entryToRemove);
             //Get Entry To Remove Priority
             int entryToRemovePriority = entryToRemove.priority;
             Assert.True(entryToRemovePriority > 0);
             //Get Entry With One Lower Priority
             int nextEntryPriority = entryToRemove.priority + 1;
-            Wishlist nextEntry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentNum && w.priority == nextEntryPriority);
+            Wishlist nextEntry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.priority == nextEntryPriority);
             Assert.NotNull(nextEntry);
             Assert.True(nextEntry.courseId != entryToRemove.courseId);
             //Remove Entry
@@ -241,20 +269,20 @@ namespace cRegis.UnitTests.UnitTests.Core.Services
         public void removeCourseFromStudentWishlist_HappyPath_NoPriorityChange()
         {
             //Get Last Entry
-            int studentNum = 1;
-            List<Wishlist> wishlistEntries = _context.Wishlist.Where(w=> w.studentId == studentNum).ToList();
-            Assert.NotNull(wishlistEntries);
+            int studentId = 1;
+            List<Wishlist> wishlistEntries = _context.Wishlist.Where(w=> w.studentId == studentId).ToList();
+            Assert.NotEmpty(wishlistEntries);
             int entryToRemovePriority = wishlistEntries.Max(w=> w.priority);
             Assert.True(entryToRemovePriority > 0);
-            Wishlist entryToRemove = _context.Wishlist.SingleOrDefault(w => w.studentId == studentNum && w.priority == entryToRemovePriority);
+            Wishlist entryToRemove = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.priority == entryToRemovePriority);
             Assert.NotNull(entryToRemove);
             //Get Entry With One Lower Priority (Null)
             int nextEntryPriority = entryToRemove.priority + 1;
-            Wishlist nextEntry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentNum && w.priority == nextEntryPriority);
+            Wishlist nextEntry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.priority == nextEntryPriority);
             Assert.Null(nextEntry);
             //Get Entry With One Higher Priority 
             int prevEntryPriority = entryToRemove.priority - 1;
-            Wishlist prevEntry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentNum && w.priority == prevEntryPriority);
+            Wishlist prevEntry = _context.Wishlist.SingleOrDefault(w => w.studentId == studentId && w.priority == prevEntryPriority);
             Assert.NotNull(prevEntry);
             //Remove Entry
             Wishlist removedEntry = _wishlistService.removeCourseFromStudentWishlist(entryToRemove.studentId, entryToRemove.courseId);
@@ -284,7 +312,7 @@ namespace cRegis.UnitTests.UnitTests.Core.Services
         {
             int studentId = 1;
             List<Wishlist> studentWishlist = _wishlistService.getStudentWishlist(studentId);
-            Assert.NotNull(studentWishlist);
+            Assert.NotEmpty(studentWishlist);
             //Check the courseId and priority for each element in the list
             Assert.True(studentWishlist.Count == 5);
             //0
