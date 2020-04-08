@@ -15,6 +15,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cRegis.UnitTests", "tests\cRegis.UnitTests\cRegis.UnitTests.csproj", "{715D5D0A-3B77-4F26-A52B-C85158658B3C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{40F53063-8A7A-4233-9271-52DB6FEB1B9D} = {40F53063-8A7A-4233-9271-52DB6FEB1B9D}
+		{9FFAB180-5136-459B-B234-32276ED65EF8} = {9FFAB180-5136-459B-B234-32276ED65EF8}
 		{E8614DF8-8B44-40A1-973C-E54DFCABC9EC} = {E8614DF8-8B44-40A1-973C-E54DFCABC9EC}
 	EndProjectSection
 EndProject
@@ -30,6 +31,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cRegis.Mobile.iOS", "src\cRegis.Mobile\cRegis.Mobile.iOS\cRegis.Mobile.iOS.csproj", "{34C2E705-B567-4777-9016-CE36E99B5D5B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cRegis.IntegrationTest", "tests\cRegis.IntegrationTest\cRegis.IntegrationTest.csproj", "{FADE9C94-D95E-46E0-B6EE-222D061E6705}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9FFAB180-5136-459B-B234-32276ED65EF8} = {9FFAB180-5136-459B-B234-32276ED65EF8}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cRegis.Mobile", "src\cRegis.Mobile\cRegis.Mobile\cRegis.Mobile.csproj", "{9FFAB180-5136-459B-B234-32276ED65EF8}"
 EndProject

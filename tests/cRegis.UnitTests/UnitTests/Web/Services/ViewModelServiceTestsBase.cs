@@ -27,7 +27,8 @@ namespace cRegis.UnitTests.UnitTests.Web.Services
                 new EnrollService(_context),
                 new StudentService(_context),
                 new FacultyService(_context),
-                new WishlistService(_context));
+                new WishlistService(_context)
+                );
         }
     }
 }

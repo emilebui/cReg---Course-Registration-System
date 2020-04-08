@@ -14,10 +14,16 @@ namespace cRegis.AcceptanceTests
         public AutomatedTests()
         {
             _driver = new FirefoxDriver();
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+
+            signin();
+            clearRegistrations();
         }
 
         public void Dispose()
         {
+            signout();
+
             _driver.Quit();
             _driver.Dispose();
         }
@@ -37,124 +43,140 @@ namespace cRegis.AcceptanceTests
             _driver.FindElement(By.XPath("/html/body/header/nav/div/div[2]/input")).Click();
         }
 
+        private string registerCourse()
+        {
+            //Click the "Find Course" Button
+            _driver.FindElement(By.LinkText("Find Course")).Click();
+            //Get the name of the selected (Top-most) Course
+            string courseName = _driver.FindElement(By.XPath("/html/body/div/main/div[2]/div[1]/div[2]/div/div[1]/h5")).Text;
+
+            //Click the "Register" button for the Course
+            _driver.FindElement(By.XPath("/html/body/div/main/div[2]/div[1]/div[2]/div/div[2]/div/a[2]")).Click();
+            //Click "yes" for the popup dialog box
+            _driver.SwitchTo().Alert().Accept();
+
+            //Click the "jb" button
+            _driver.FindElement(By.LinkText("jb")).Click();
+
+            return courseName;
+        }
+
+        private void dropCourse()
+        {
+            //Click the "Drop" button for the Course
+            _driver.FindElement(By.XPath("/html/body/div/main/div/div[2]/div/div[2]/div/div[2]/div/button")).Click();
+            //Click "yes" for the popup dialog boxes
+            _driver.SwitchTo().Alert().Accept();
+            _driver.SwitchTo().Alert().Accept();
+        }
+
+        private void clearRegistrations()
+        {
+            while (_driver.FindElements(By.LinkText("Detail")).Count != 0)
+            {
+                dropCourse();
+            }
+        }
+
         //Tests
 
         [Fact]
-        public void Signin_StudentInfo_Signout_Test()
+        public void StudentInfo_Test()
         {
-            signin();
-
             //Verify that the student info is displayed (ie. signin worked)
             Assert.Contains("Welcome, John Braico", _driver.PageSource);
             Assert.Contains("Student Name : John Braico", _driver.PageSource);
             Assert.Contains("Student Id : 1", _driver.PageSource);
             Assert.Contains("Major : Computer Science", _driver.PageSource);
             Assert.Contains("Credit hours remaining : 24", _driver.PageSource);
+        }
 
-            signout();
+        [Fact]
+        public void RegisteredCourse_ViewDetails_Test()
+        {
+            string courseName = registerCourse();
 
-            //Verify that the Signout occurs correctly
-            Assert.DoesNotContain("Welcome, John Braico", _driver.PageSource);
+            //Click the "Detail" button for the Course
+            _driver.FindElement(By.LinkText("Detail")).Click();
+
+            //Verify that it shows the details for that Course
+            Assert.Contains(courseName, _driver.PageSource);
+            Assert.Contains("Available Space", _driver.PageSource);
+            Assert.Contains("Date", _driver.PageSource);
+            Assert.Contains("Average Rating", _driver.PageSource);
+            Assert.Contains("Instructor", _driver.PageSource);
+            Assert.Contains("Location", _driver.PageSource);
         }
 
         [Fact]
         public void FindCourse_RegisterCourse_DropCourse_Test()
         {
-            signin();
+            string courseName = registerCourse();
 
-            //Verify the the student is currently not enrolled the "Calculus 2"
-            Assert.DoesNotContain("Calculus 2", _driver.PageSource);
+            Assert.Contains(courseName, _driver.PageSource);
 
-            //Click the "Find Course" Button
-            _driver.FindElement(By.LinkText("Find Course")).Click();
-            Assert.Contains("Calculus 2", _driver.PageSource);
+            dropCourse();
 
-            //Click the "Register" button for Calculus 2
-            _driver.FindElement(By.XPath("/html/body/div/main/div[2]/div[2]/div[2]/div/div[2]/div/a[2]")).Click();
-            //Click "yes" for the popup dialog box
-            _driver.SwitchTo().Alert().Accept();
-            Assert.DoesNotContain("Calculus 2", _driver.PageSource);
-
-            //Click the "jb" buttom
-            _driver.FindElement(By.LinkText("jb")).Click();
-            Assert.Contains("Calculus 2", _driver.PageSource);
-
-            //Click the "Drop" button for Calculus 2
-            _driver.FindElement(By.XPath("/html/body/div/main/div/div[2]/div[7]/div[2]/div/div[2]/div/button")).Click();
-            //Click "yes" for the popup dialog boxes
-            _driver.SwitchTo().Alert().Accept();
-            _driver.SwitchTo().Alert().Accept();
-
-            //Ensure that "Calculus 2" is no displayed as Registered
-            Assert.DoesNotContain("Calculus 2", _driver.PageSource);
+            //Ensure that the Course is no displayed as Registered
+            Assert.DoesNotContain(courseName, _driver.PageSource);
 
             //Click the "Find Course" Button
             _driver.FindElement(By.LinkText("Find Course")).Click();
-            Assert.Contains("Calculus 2", _driver.PageSource);
 
-            signout();
+            //Ensure that the Course is displayed as Registerable
+            Assert.Contains(courseName, _driver.PageSource);
         }
 
         [Fact]
         public void FindCourse_ViewDetails_Test()
         {
-            signin();
+            //Click the "Find Course" Button
+            _driver.FindElement(By.LinkText("Find Course")).Click();
 
-            //Click the "Details" button for "Comp 3370 - Computer Organization"
-            _driver.FindElement(By.XPath("/html/body/div/main/div/div[2]/div[1]/div[2]/div/div[2]/div/a")).Click();
+            //Click the "Details" button for the top Course
+            _driver.FindElement(By.XPath("/html/body/div/main/div[2]/div[1]/div[2]/div/div[2]/div/a[1]")).Click();
 
-            //Verify that it shows the details for that course
-            Assert.Contains("COMP 3370 - Computer Organization", _driver.PageSource);
+            //Verify that it shows the Details for that Course
             Assert.Contains("Available Space", _driver.PageSource);
             Assert.Contains("Date", _driver.PageSource);
             Assert.Contains("Average Rating", _driver.PageSource);
             Assert.Contains("Instructor", _driver.PageSource);
             Assert.Contains("Location", _driver.PageSource);
-
-            signout();
         }
 
         [Fact]
         public void History_ViewDetails_Test()
         {
-            signin();
-
             //Click the "History" Button
             _driver.FindElement(By.LinkText("History")).Click();
             Assert.Contains("Registration History", _driver.PageSource);
-            Assert.Contains("An Introduction to Computer Science 1", _driver.PageSource);
 
-            //Click the "Detail" button for this course
+            //Click the "Detail" button for this Course
             _driver.FindElement(By.XPath("/html/body/div/main/div/div[1]/div[2]/div/div[2]/div/a[1]")).Click();
 
-            //Verify that it shows the details for that course
-            Assert.Contains("COMP 1010 - An Introduction to Computer Science 1", _driver.PageSource);
+            //Verify that it shows the Details for that Course
             Assert.Contains("Available Space", _driver.PageSource);
             Assert.Contains("Date", _driver.PageSource);
             Assert.Contains("Average Rating", _driver.PageSource);
             Assert.Contains("Instructor", _driver.PageSource);
             Assert.Contains("Location", _driver.PageSource);
 
-            //Verify that it shows the rating for that course
+            //Verify that it shows the rating for that Course
             Assert.Contains("NEVER AGAIN", _driver.PageSource);
-
-            signout();
         }
 
         [Fact]
         public void History_Rate_Test()
         {
-            string rating = "0";
+            string rating = rand.Next(100).ToString();
             string randomComment = rand.Next().ToString();
-
-            signin();
 
             //Click the "History" Button
             _driver.FindElement(By.LinkText("History")).Click();
             Assert.Contains("Registration History", _driver.PageSource);
-            Assert.Contains("An Introduction to Computer Science 1", _driver.PageSource);
+            string courseName = _driver.FindElement(By.XPath("/html/body/div/main/div/div[1]/div[1]")).Text;
 
-            //Click the "Rate" button for this course
+            //Click the "Rate" button for this Course
             _driver.FindElement(By.XPath("/html/body/div/main/div/div[1]/div[2]/div/div[2]/div/a[2]")).Click();
             Assert.Contains("Your Rating(0-100)", _driver.PageSource);
             Assert.Contains("Your Comment", _driver.PageSource);
@@ -168,16 +190,14 @@ namespace cRegis.AcceptanceTests
 
             //Click the "History" Button
             _driver.FindElement(By.LinkText("History")).Click();
-            Assert.Contains("An Introduction to Computer Science 1", _driver.PageSource);
+            Assert.Contains(courseName, _driver.PageSource);
 
-            //Click the "Detail" button for this course
+            //Click the "Detail" button for this Course
             _driver.FindElement(By.XPath("/html/body/div/main/div/div[1]/div[2]/div/div[2]/div/a[1]")).Click();
 
             //Verify that the rating was added
             Assert.Contains(rating, _driver.PageSource);
             Assert.Contains(randomComment, _driver.PageSource);
-
-            signout();
         }
     }
 }

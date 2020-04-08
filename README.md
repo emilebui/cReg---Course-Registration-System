@@ -34,8 +34,8 @@ cReg™ is an application that enables university students to efficiently and ef
 
 # Running Instance
 - [Login Info](docs/loginInfo.md)
-- [Production Instance](http://cregwebapp-dev.ca-central-1.elasticbeanstalk.com/)
-- [Testing Instance](http://ec2-15-222-137-75.ca-central-1.compute.amazonaws.com/)
+- [Production Instance](http://creg.ca-central-1.elasticbeanstalk.com/)
+- [Testing Instance](http://ec2-15-222-137-75.ca-central-1.compute.amazonaws.com/) **(offline)**
 
   
 # Related Documents

@@ -106,11 +106,22 @@ namespace cRegis.Web.Services
             }
 
             List<CourseContainerViewModel> courseContainerViewModels = new List<CourseContainerViewModel>();
-            ISet<CourseActions> actions = new HashSet<CourseActions> { CourseActions.ViewDetail, CourseActions.RegisterCourse, CourseActions.AddToWishlist };
+            ISet<CourseActions> actions;
             List<Course> eligibleCourses = await _courseService.getRecCoursesForStudentAsync(student.studentId);
 
             foreach (Course course in eligibleCourses)
             {
+                var inWishList = await _wishlistService.getWishlistByKeys(student.studentId, course.courseId);
+                // if course already in wishlist, then disable it
+                if (inWishList != null)
+                {
+                    actions = new HashSet<CourseActions> { CourseActions.ViewDetail, CourseActions.RegisterCourse, CourseActions.AddToWishListDisabled };
+                }
+                else
+                {
+                    actions = new HashSet<CourseActions> { CourseActions.ViewDetail, CourseActions.RegisterCourse, CourseActions.AddToWishlist };
+
+                }
                 courseContainerViewModels.Add(buildCourseContainerViewModel(course, actions, student: student));
             }
 

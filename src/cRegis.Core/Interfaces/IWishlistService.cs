@@ -15,6 +15,8 @@ namespace cRegis.Core.Interfaces
 
     public interface IWishlistService
     {
+        Task<Wishlist> getWishlistByKeys(int sid, int cid);
+
         Task<int> addCoursetoStudentWishlist(int sid, int cid);
 
         Task<int> updatePriority(int sid, int cid, MoveDirection direction);

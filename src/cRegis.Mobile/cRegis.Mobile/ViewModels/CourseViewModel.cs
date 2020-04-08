@@ -5,7 +5,7 @@ using cRegis.Mobile.Models.Entities;
 
 namespace cRegis.Mobile.ViewModels
 {
-    class CourseViewModel
+    public class CourseViewModel
     {
         public List<Course> AllCourses { get; set; }
 

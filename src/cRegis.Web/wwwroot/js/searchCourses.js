@@ -1,7 +1,7 @@
 // JavaScript source code
 $(document).ready(function () {
 
-    var domain = LOCAL_DOMAIN;
+    var domain = AWS_PROD_DOMAIN;
     
     var autocomplete = new autoComplete({
         data: {                              // Data src [Array, Function, Async] | (REQUIRED)
@@ -11,7 +11,7 @@ $(document).ready(function () {
                 // User search query
                 const query = document.querySelector("#autoComplete").value;
                 // Fetch External Data Source
-                const source = await fetch(domain+`/api/courses?keywords=${query}`);
+                const source = await fetch(domain+`/course?keywords=${query}`);
                 // Format data into JSON
                 const data = await source.json();
                 // Return Fetched data
@@ -44,7 +44,7 @@ $(document).ready(function () {
             position: "afterend",
             element: "ul"
         },
-        //maxResults: 5,                         // Max. number of rendered results | (Optional)
+        maxResults: 20,                         // Max. number of rendered results | (Optional)
         highlight: true,                       // highlight matching results      | (optional)
         resultItem: {                          // Rendered result item            | (Optional)
             content: (data, source) => {

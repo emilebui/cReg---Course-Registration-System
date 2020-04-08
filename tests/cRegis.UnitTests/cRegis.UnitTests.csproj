@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\cRegis.API\cRegis.API.csproj" />
     <ProjectReference Include="..\..\src\cRegis.Core\cRegis.Core.csproj" />
+    <ProjectReference Include="..\..\src\cRegis.Mobile\cRegis.Mobile\cRegis.Mobile.csproj" />
     <ProjectReference Include="..\..\src\cRegis.Web\cRegis.Web.csproj" />
   </ItemGroup>
 

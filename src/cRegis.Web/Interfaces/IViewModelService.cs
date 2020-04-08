@@ -15,7 +15,8 @@ namespace cRegis.Web.Interfaces
         AddToWishlist,
         WishlistPriorityUp,
         WishlistPriorityDown,
-        RemoveFromWishlist
+        RemoveFromWishlist,
+        AddToWishListDisabled
     }
 
     public interface IViewModelService

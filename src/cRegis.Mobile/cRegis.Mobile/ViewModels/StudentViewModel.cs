@@ -8,7 +8,7 @@ using cRegis.Mobile.Services;
 
 namespace cRegis.Mobile.ViewModels
 {
-    class StudentViewModel
+    public class StudentViewModel
     {
 
         public string studentName { get; set; }
@@ -22,8 +22,11 @@ namespace cRegis.Mobile.ViewModels
 
         public StudentViewModel(Student s, string crehrs, List<EnrolledViewModel> listC, string fName)
         {
-            studentName = s.name;
-            studentID = s.studentId;
+            if (s != null)
+            {
+                studentName = s.name;
+                studentID = s.studentId;
+            }
             facultyName = fName;
             creditRemain = crehrs;
             enrolledlist = listC;

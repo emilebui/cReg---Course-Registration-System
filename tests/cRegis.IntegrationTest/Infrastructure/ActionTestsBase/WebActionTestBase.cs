@@ -25,7 +25,6 @@ namespace cRegis.Tests.IntegrationTest.Infrastructure
         protected readonly FakeUserManager _userManager;
         protected readonly FakeSignInManager _signInManager;
 
-
         public WebActionTestBase()
         {
             var options = new DbContextOptionsBuilder<DataContextTest>()

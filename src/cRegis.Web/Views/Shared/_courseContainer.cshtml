@@ -44,6 +44,10 @@
                     {
                         <a class="btn btn-danger" asp-controller="course" asp-action="Add" asp-route-cid="@Model.courseId">Add To Wishlist</a>
                     }
+                    @if (Model.actions.Contains(CourseActions.AddToWishListDisabled))
+                    {
+                        <a class="btn btn-danger disabled" asp-controller="course" asp-action="Add" asp-route-cid="@Model.courseId">Add To Wishlist</a>
+                    }
                     @if (Model.actions.Contains(CourseActions.WishlistPriorityUp))
                     {
                         <a class="btn btn-light" asp-controller="course" asp-action="Move" asp-route-cid="@Model.courseId" asp-route-direction="@MoveDirection.MoveUp">⮝</a>

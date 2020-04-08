@@ -106,6 +106,7 @@ namespace cRegis.Core.Services
             return 0;
         }
 
+
         public Wishlist removeCourseFromStudentWishlist(int sid, int cid)
         {
             Wishlist thisEntry = _context.Wishlist.Find(sid, cid);
@@ -134,5 +135,9 @@ namespace cRegis.Core.Services
             return orderedWishlist.ToList();
         }
 
+        public async Task<Wishlist> getWishlistByKeys(int sid, int cid)
+        {
+            return await _context.Wishlist.FindAsync(sid, cid);
+        }
     }
 }

@@ -1,10 +1,10 @@
 
 {
     "comment" : "This file is used to help set default values when using the dotnet CLI extension Amazon.ElasticBeanstalk.Tools. For more information run \"dotnet eb --help\" from the project root.",
-    "profile" : "RayLiang",
+    "profile" : "default",
     "region"  : "ca-central-1",
-    "application" : "cRegWebApp",
-    "environment" : "cRegWebApp-dev",
+    "application" : "cReg",
+    "environment" : "Creg-env",
     "cname"       : "cregwebapp-dev",
     "solution-stack" : "64bit Windows Server 2016 v2.5.1 running IIS 10.0",
     "environment-type" : "SingleInstance",

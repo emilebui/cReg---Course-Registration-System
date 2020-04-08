@@ -5,7 +5,7 @@ using cRegis.Mobile.Models.Entities;
 
 namespace cRegis.Mobile.ViewModels
 {
-    class EnrolledViewModel
+    public class EnrolledViewModel
     {
         public int cid { get; set; }
         public int eid { get; set; }
@@ -16,12 +16,15 @@ namespace cRegis.Mobile.ViewModels
         
         public EnrolledViewModel(Course c, Enrolled e)
         {
-            cid = e.courseId;
-            eid = e.enrollId;
-            cName = c.courseName;
-            cDes = c.courseDescription;
-            cour = c;
-            enroll = e;
+            if (c != null && e != null)
+            {
+                cid = e.courseId;
+                eid = e.enrollId;
+                cName = c.courseName;
+                cDes = c.courseDescription;
+                cour = c;
+                enroll = e;
+            }
         }
     }
 }

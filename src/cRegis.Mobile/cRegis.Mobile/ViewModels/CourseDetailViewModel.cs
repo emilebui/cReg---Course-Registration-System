@@ -5,7 +5,7 @@ using cRegis.Mobile.Models.Entities;
 
 namespace cRegis.Mobile.ViewModels
 {
-    class CourseDetailViewModel
+    public class CourseDetailViewModel
     {
         public Course chosenCourse { get; set; }
         public List<Comment> commentList { get; set; }
@@ -23,13 +23,16 @@ namespace cRegis.Mobile.ViewModels
         {
             chosenCourse = c;
             commentList = l;
-            courseId = c.courseId;
-            courseName = c.courseName;
-            courseDescription = c.courseDescription;
-            creditHours = c.creditHours;
-            space = c.space;
-            date = c.date;
-        }
 
+            if (c != null)
+            {
+                courseId = c.courseId;
+                courseName = c.courseName;
+                courseDescription = c.courseDescription;
+                creditHours = c.creditHours;
+                space = c.space;
+                date = c.date;
+            }
+        }
     }
 }
