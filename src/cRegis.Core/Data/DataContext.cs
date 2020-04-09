@@ -218,6 +218,7 @@ namespace cRegis.Core.Data
 
             IdentityRole studentRole = new IdentityRole { Name = "Student", NormalizedName = "STUDENT" };
             IdentityRole adminRole = new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" };
+
             modelBuilder.Entity<IdentityRole>().HasData(
                 studentRole, adminRole
                 );

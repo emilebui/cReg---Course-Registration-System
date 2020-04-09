@@ -339,5 +339,25 @@ namespace cRegis.UnitTests.UnitTests.Core.Services
             List<Wishlist> studentWishlist = _wishlistService.getStudentWishlist(studentId);
             Assert.True(studentWishlist.Count == 0);
         }
+
+        //getWsihlistByKeysTest()
+        [Fact]
+        public async void getgetWishlistByKeysTest_HappyPath()
+        {
+            int studentId = 1;
+            int courseId = 1;
+            Wishlist entry = await _wishlistService.getWishlistByKeys(studentId, courseId);
+            Assert.NotNull(entry);
+            Assert.True(entry.priority == 1);
+        }
+
+        [Fact]
+        public async void getgetWishlistByKeysTest_NonExistentEntry()
+        {
+            int studentId = 1;
+            int courseId = 10;
+            Wishlist entry = await _wishlistService.getWishlistByKeys(studentId, courseId);
+            Assert.Null(entry);
+        }
     }
 }
