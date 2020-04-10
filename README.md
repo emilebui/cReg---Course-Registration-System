@@ -28,9 +28,8 @@ cReg™ is an application that enables university students to efficiently and ef
     - Elastic Beanstalk
   
 - Testing Tools
-  - Unit Test: xUnit, Moq
-  - Intergration Test: In Progress
-  - System Test: In Progress
+  - Unit/Intergration Test: xUnit, Moq
+  - Acceptance Test: Selenium
 
 # Running Instance
 - [Login Info](docs/loginInfo.md)
