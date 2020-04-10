@@ -1,4 +1,4 @@
-| AccountId | StudentId | StudentName      | Password   | Year |
+| username  | StudentId | StudentName      | Password   | Year |
 |-----------|-----------|------------------|------------|------|
 | jb        | 1         | John Braico      | Password1! | 4    |
 | mz        | 2         | Mike Zapp        | Password1! | 3    |
